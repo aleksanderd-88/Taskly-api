@@ -11,4 +11,4 @@ app.use('/', routes)
 
 app.listen(port, () => console.log(`API started and listening to port ${port}`))
 
-module.exports = app
+export default app

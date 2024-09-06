@@ -5,6 +5,7 @@ import verifyAuthToken from '../middleware/verifyAuthToken'
 const router = Router()
 
 router.get('/api/health-check', controllers.healthCheck)
+router.get('/api/app/version/get', controllers.app.version.get)
 
 // User
 router.post('/api/users/create', controllers.user.create)

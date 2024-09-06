@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import axios from 'axios'
+import { version } from '../../../../package.json'
 
 export default async (req: Request, res: Response) => {
   try {
@@ -8,7 +9,7 @@ export default async (req: Request, res: Response) => {
       axios.get('https://api.github.com/repos/aleksanderd-88/Taskly-api/commits?per_page=1')
     ])
 
-    let response: { client: string, api: string } = { client: '', api: '' }
+    let response: { client: string, api: string, apiVersion: string } = { client: '', api: '', apiVersion: '' }
     let commits: { sha: string }[] = []
 
     results.forEach(result => commits.push(result.data[0]))
@@ -16,7 +17,8 @@ export default async (req: Request, res: Response) => {
     response = {
       ...response,
       client: commits[0].sha,
-      api: commits[1].sha
+      api: commits[1].sha,
+      apiVersion: version 
     }
 
     return res.status(200).send(response)

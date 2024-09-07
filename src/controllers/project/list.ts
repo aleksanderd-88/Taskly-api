@@ -3,15 +3,26 @@ import { RequestCustom } from "../../../types";
 import models from "../../../models";
 import get from 'lodash/get'
 import { FlattenMaps } from "mongoose";
+import { omit } from "lodash";
 
 export default async (req: RequestCustom, res: Response) => {
   try {
-    const filter = get(req, 'body.data.filter', { isDeleted: false })
+    let filter: FlattenMaps<Record<string, unknown>> = {}
+
+    Object.entries(get(req, 'body.data.filter', {})).forEach(([key, value]) => {
+      if( key === 'isDeleted' && value ) {
+        filter = { isDeleted: value }
+      }
+      if ( key === 'member' && value ) {
+        filter = { members: { $elemMatch: { email: value, verified: true } } }
+      }
+    })
+
     const userId = get(req, 'user._id', null)
-    let data = { userId }
+    let data: Record<string, unknown> = { userId, isDeleted: false }
     
     if ( filter && Object.keys(filter).length )
-      data = { ...data, ...filter }
+      data = { ...omit(data, ['userId']), ...filter }
 
     let projects = await models.Project.find(data).lean()
     let results: FlattenMaps<Record<string, unknown>[]> = []

@@ -26,6 +26,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  owner: {
+    type: String,
+    required: true
+  },
   tasks: {
     type: Array,
     default: []

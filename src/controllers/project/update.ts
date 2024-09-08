@@ -6,7 +6,8 @@ import { get, pick } from "lodash";
 import { validate } from "email-validator";
 import dotenv from 'dotenv'
 import { generateAuthToken } from "../../libs";
-import { RequestCustom } from "../../../types";
+import { RequestCustom } from "../../../types"
+import { userIsProjectOwner } from "../../utils/user-access";
 
 dotenv.config()
 
@@ -16,11 +17,14 @@ export default async (req: RequestCustom, res: Response) => {
     const id = get(req, 'params.id', null)
     const currentUser = get(req, 'user', null)
     let promises = []
-
+    
     // Sanity check
     if ( !id || !requestIsValid(pick(data, ['name'])) )
       throw new Error('One or more parameters are missing')
     
+    if ( !(await userIsProjectOwner(id, req)) )
+      throw new Error('You dont have permission to perform this action')
+
     const { name, members = [] } = data
     const project = await models.Project.findById(id)
     if ( !project )

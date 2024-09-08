@@ -8,17 +8,17 @@ import { omit } from "lodash";
 export default async (req: RequestCustom, res: Response) => {
   try {
     let filter: FlattenMaps<Record<string, unknown>> = {}
+    const userId = get(req, 'user._id', '')
 
     Object.entries(get(req, 'body.data.filter', {})).forEach(([key, value]) => {
       if( key === 'isDeleted' && value ) {
-        filter = { isDeleted: value }
+        filter = { isDeleted: value, userId }
       }
       if ( key === 'member' && value ) {
         filter = { members: { $elemMatch: { email: value, verified: true } } }
       }
     })
 
-    const userId = get(req, 'user._id', null)
     let data: Record<string, unknown> = { userId, isDeleted: false }
     
     if ( filter && Object.keys(filter).length )

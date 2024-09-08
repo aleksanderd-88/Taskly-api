@@ -12,7 +12,7 @@ export default async (req: RequestCustom, res: Response) => {
 
     const data = verifyJwtToken(token)
 
-    const project = await models.Project.findOne({ members: { $elemMatch: { email: data.email } } })
+    const project = await models.Project.findOne({ isDeleted: false, members: { $elemMatch: { email: data.email } } })
     if ( !project )
       throw new Error('Could not find associated member')
     
